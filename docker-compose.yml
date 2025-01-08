@@ -2,10 +2,10 @@ version: "3.8"
 services:
   frontend:
     build:
-      context: ./frontend
+      context: ./filmlingo_fe
       dockerfile: Dockerfile
     env_file:
-      - ./frontend/.env
+      - ./filmlingo_fe/.env
     ports:
       - "3000:3000"
     networks:
@@ -13,12 +13,14 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./filmlingo_be
       dockerfile: Dockerfile
     env_file:
-      - ./backend/.env
+      - ./filmlingo_be/.env
     ports:
       - "8000:8000"
+    depends_on:
+      - db
     networks:
       - app-network
 
@@ -34,6 +36,19 @@ services:
     networks:
       - app-network
 
+  db:
+    image: postgres:15-alpine
+    container_name: filmlingo_postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  postgres_data:
